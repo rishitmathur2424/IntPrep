@@ -28,7 +28,7 @@ async def global_exception_handler(request: Request, exc: Exception):
         content={"error": str(exc)},
     )
 
-@app.get("/")
+@app.api_route("/", methods=["GET", "HEAD"])
 def root():
     return {"status": "running"}
 
