@@ -14,7 +14,16 @@ from auth import hash_password, verify_password, create_access_token, get_curren
 from resume_parser import parse_resume
 from question_generator import generate_questions
 from evaluator import evaluate_answer
+from fastapi import Request
+from fastapi.responses import JSONResponse
 
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+    print("🔥 ERROR:", str(exc))
+    return JSONResponse(
+        status_code=500,
+        content={"error": str(exc)},
+    )
 app = FastAPI(title="IntPrep API", version="3.0.0")
 
 # ── CORS ───────────────────────────────────────────────────────────────────────
