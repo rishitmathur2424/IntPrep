@@ -9,12 +9,18 @@ from datetime import datetime, timezone
 from fastapi import FastAPI, HTTPException, Depends, UploadFile, File, Form
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from database import db
+
 from auth import hash_password, verify_password, create_access_token, get_current_user, decode_token
 from resume_parser import parse_resume
 from question_generator import generate_questions
 from evaluator import evaluate_answer
 
+try:
+    from database import db
+except Exception as e:
+    print("🔥 DB INIT ERROR:", e)
+    raise e
+    
 app = FastAPI(title="IntPrep API", version="3.0.0")
 
 # ── CORS ───────────────────────────────────────────────────────────────────────
