@@ -14,7 +14,7 @@ from resume_parser import parse_resume
 from question_generator import generate_questions
 from evaluator import evaluate_answer
 from fastapi import Request
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, Response
 
 
 app = FastAPI(title="IntPrep API", version="3.0.0")
@@ -22,7 +22,7 @@ app = FastAPI(title="IntPrep API", version="3.0.0")
 # ── CORS 
 _raw_origins = os.getenv(
     "ALLOWED_ORIGINS",
-    "http://localhost:3000"
+    "http://localhost:3000,https://intprep1.netlify.app"
 )
 
 _origins = [o.strip() for o in _raw_origins.split(",") if o.strip()]
