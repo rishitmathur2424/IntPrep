@@ -20,7 +20,7 @@ from fastapi.responses import JSONResponse
 
 app = FastAPI(title="IntPrep API", version="3.0.0")
 
-# ── CORS (🔥 FIXED) ─────────────────────────────────────────────────────────────
+# ── CORS 
 _raw_origins = os.getenv(
     "ALLOWED_ORIGINS",
     "http://localhost:3000,https://intprep1.netlify.app"
