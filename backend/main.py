@@ -24,6 +24,10 @@ async def global_exception_handler(request: Request, exc: Exception):
         status_code=500,
         content={"error": str(exc)},
     )
+
+@app.get("/")
+def root():
+    return {"status": "running"}
 app = FastAPI(title="IntPrep API", version="3.0.0")
 
 # ── CORS ───────────────────────────────────────────────────────────────────────
