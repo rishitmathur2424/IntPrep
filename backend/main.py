@@ -17,6 +17,9 @@ from evaluator import evaluate_answer
 from fastapi import Request
 from fastapi.responses import JSONResponse
 
+
+app = FastAPI(title="IntPrep API", version="3.0.0")
+
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):
     print("🔥 ERROR:", str(exc))
@@ -28,7 +31,6 @@ async def global_exception_handler(request: Request, exc: Exception):
 @app.get("/")
 def root():
     return {"status": "running"}
-app = FastAPI(title="IntPrep API", version="3.0.0")
 
 # ── CORS ───────────────────────────────────────────────────────────────────────
 _raw_origins = os.getenv("ALLOWED_ORIGINS", "https://intprep1.netlify.app")
