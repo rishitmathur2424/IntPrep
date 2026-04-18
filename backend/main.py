@@ -5,7 +5,7 @@ import os
 import json
 import traceback
 from datetime import datetime, timezone
-
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI, HTTPException, Depends, UploadFile, File, Form
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
