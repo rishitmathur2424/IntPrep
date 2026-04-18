@@ -20,9 +20,7 @@ from fastapi.responses import JSONResponse
 
 app = FastAPI(title="IntPrep API", version="3.0.0")
 
-# ── CORS ───────────────────────────────────────────────────────────────────────
-import os
-
+# ── CORS (🔥 FIXED) ─────────────────────────────────────────────────────────────
 _raw_origins = os.getenv(
     "ALLOWED_ORIGINS",
     "http://localhost:3000,https://intprep1.netlify.app"
@@ -34,25 +32,27 @@ print("🌍 Allowed origins:", _origins)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=_origins,   
+    allow_origins=_origins,   # ✅ IMPORTANT (no "*")
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
+
+@app.options("/{full_path:path}")
+async def options_handler(request: Request, full_path: str):
+    return Response(status_code=200)
+
+
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):
     print("🔥 ERROR:", str(exc))
-    return JSONResponse(
-        status_code=500,
-        content={"error": str(exc)},
-    )
+    return JSONResponse(status_code=500, content={"error": str(exc)})
+
 
 @app.api_route("/", methods=["GET", "HEAD"])
 def root():
     return {"status": "running"}
-
-
 
 
 # ── Pydantic Models ────────────────────────────────────────────────────────────
