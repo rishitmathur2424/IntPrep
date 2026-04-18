@@ -20,27 +20,17 @@ from fastapi.responses import JSONResponse, Response
 app = FastAPI(title="IntPrep API", version="3.0.0")
 
 # ── CORS 
-_raw_origins = os.getenv(
-    "ALLOWED_ORIGINS",
-    "http://localhost:3000,https://intprep1.netlify.app"
-)
 
-_origins = [o.strip() for o in _raw_origins.split(",") if o.strip()]
-
-print("🌍 Allowed origins:", _origins)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=_origins,   # ✅ IMPORTANT (no "*")
+    allow_origins=["https://intprep1.netlify.app"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
 
-@app.options("/{full_path:path}")
-async def options_handler(request: Request, full_path: str):
-    return Response(status_code=200)
 
 
 @app.exception_handler(Exception)
@@ -137,16 +127,31 @@ def signup(req: SignupRequest):
 
 @app.post("/api/auth/login")
 def login(req: LoginRequest):
+    print("🔥 LOGIN HIT")  # debug
+
     docs = db.collection("users").where("email", "==", req.email).limit(1).get()
     if not docs:
         raise HTTPException(status_code=401, detail="Invalid email or password.")
 
     user = _doc_to_dict(docs[0])
+
     if not verify_password(req.password, user["password_hash"]):
         raise HTTPException(status_code=401, detail="Invalid email or password.")
 
-    token = create_access_token({"sub": user["id"], "email": user["email"], "name": user["name"]})
-    return {"token": token, "user": {"id": user["id"], "name": user["name"], "email": user["email"]}}
+    token = create_access_token({
+        "sub": user["id"],
+        "email": user["email"],
+        "name": user["name"]
+    })
+
+    return {
+        "token": token,
+        "user": {
+            "id": user["id"],
+            "name": user["name"],
+            "email": user["email"]
+        }
+    }
 
 
 @app.get("/api/auth/me")
