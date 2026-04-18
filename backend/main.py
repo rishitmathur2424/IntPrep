@@ -31,7 +31,7 @@ def root():
 app = FastAPI(title="IntPrep API", version="3.0.0")
 
 # ── CORS ───────────────────────────────────────────────────────────────────────
-_raw_origins = os.getenv("ALLOWED_ORIGINS", "http://localhost:3000")
+_raw_origins = os.getenv("ALLOWED_ORIGINS", "https://intprep1.netlify.app")
 _origins = [o.strip() for o in _raw_origins.split(",")]
 
 app.add_middleware(
