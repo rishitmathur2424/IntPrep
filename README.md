@@ -1,4 +1,4 @@
-# ⚡ InterviewAI – AI Interview Preparation Tool
+# ⚡ IntPrep– AI Interview Preparation Tool
 
 A full-stack, production-ready mock interview system with AI-powered feedback, webcam + voice support, resume analysis, and detailed performance reports.
 
@@ -52,21 +52,7 @@ ai-interview-tool/
 
 ---
 
-### 1. Database Setup
-
-```sql
--- In MySQL:
-CREATE DATABASE interview_tool;
-```
-
-Then run the schema:
-```bash
-mysql -u root -p interview_tool < backend/schema.sql
-```
-
----
-
-### 2. Backend Setup
+### Backend Setup
 
 ```bash
 cd backend
@@ -94,7 +80,7 @@ Swagger docs at: **http://localhost:8000/docs**
 
 ---
 
-### 3. Frontend Setup
+### Frontend Setup
 
 ```bash
 cd frontend
@@ -188,28 +174,3 @@ Speech recognition (Web Speech API) is supported in:
 > Users can always type answers manually if speech recognition is unavailable.
 
 ---
-
-## 📝 Notes for Academic Submission
-
-- All libraries used are **free and open-source** — no paid APIs
-- The project runs **fully locally** with no external service dependencies
-- Code is well-commented for readability and evaluation
-- Architecture follows clean separation of concerns: routing, auth, parsing, evaluation are all separate modules
-- Database schema is normalized (users → sessions → questions → answers → reports)
-
----
-
-## 🔮 Future Enhancements
-
-- [ ] OpenAI/Ollama integration for richer ideal answers
-- [ ] Video recording + replay of interview sessions
-- [ ] More granular skill taxonomy from resume
-- [ ] Email PDF report export
-- [ ] Admin dashboard with user analytics
-- [ ] Collaborative peer mock interview mode
-
----
-
-## 👨‍💻 Author
-
-Built as a final-year academic project showcasing full-stack development, AI/NLP integration, and modern UI/UX design.
