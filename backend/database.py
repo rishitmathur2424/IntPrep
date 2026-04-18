@@ -3,7 +3,7 @@ import json
 import firebase_admin
 from firebase_admin import credentials, firestore
 
-firebase_config = os.getenv("FIREBASE_CONFIG")
+firebase_config = os.getenv("FIREBASE_SERVICE_ACCOUNT_JSON")
 
 if not firebase_config:
     raise Exception("❌ FIREBASE_CONFIG not found")
