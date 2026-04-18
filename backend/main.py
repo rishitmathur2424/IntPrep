@@ -127,31 +127,32 @@ def signup(req: SignupRequest):
 
 @app.post("/api/auth/login")
 def login(req: LoginRequest):
-    print("🔥 LOGIN HIT")  # debug
+    try:
+        print("🔥 LOGIN HIT", req)
 
-    docs = db.collection("users").where("email", "==", req.email).limit(1).get()
-    if not docs:
-        raise HTTPException(status_code=401, detail="Invalid email or password.")
+        docs = db.collection("users").where("email", "==", req.email).limit(1).get()
+        print("📦 docs:", docs)
 
-    user = _doc_to_dict(docs[0])
+        if not docs:
+            raise HTTPException(status_code=401, detail="Invalid email or password.")
 
-    if not verify_password(req.password, user["password_hash"]):
-        raise HTTPException(status_code=401, detail="Invalid email or password.")
+        user = _doc_to_dict(docs[0])
+        print("👤 user:", user)
 
-    token = create_access_token({
-        "sub": user["id"],
-        "email": user["email"],
-        "name": user["name"]
-    })
+        if not verify_password(req.password, user["password_hash"]):
+            raise HTTPException(status_code=401, detail="Invalid email or password.")
 
-    return {
-        "token": token,
-        "user": {
-            "id": user["id"],
-            "name": user["name"],
-            "email": user["email"]
-        }
-    }
+        token = create_access_token({
+            "sub": user["id"],
+            "email": user["email"],
+            "name": user["name"]
+        })
+
+        return {"token": token, "user": user}
+
+    except Exception as e:
+        print("🔥 LOGIN ERROR:", str(e))
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @app.get("/api/auth/me")
