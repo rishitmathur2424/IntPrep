@@ -7,7 +7,6 @@ import traceback
 from datetime import datetime, timezone
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI, HTTPException, Depends, UploadFile, File, Form
-from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from database import db
 from auth import hash_password, verify_password, create_access_token, get_current_user, decode_token
@@ -23,7 +22,7 @@ app = FastAPI(title="IntPrep API", version="3.0.0")
 # ── CORS 
 _raw_origins = os.getenv(
     "ALLOWED_ORIGINS",
-    "http://localhost:3000,https://intprep1.netlify.app"
+    "http://localhost:3000"
 )
 
 _origins = [o.strip() for o in _raw_origins.split(",") if o.strip()]
