@@ -20,18 +20,6 @@ from fastapi.responses import JSONResponse
 
 app = FastAPI(title="IntPrep API", version="3.0.0")
 
-@app.exception_handler(Exception)
-async def global_exception_handler(request: Request, exc: Exception):
-    print("🔥 ERROR:", str(exc))
-    return JSONResponse(
-        status_code=500,
-        content={"error": str(exc)},
-    )
-
-@app.api_route("/", methods=["GET", "HEAD"])
-def root():
-    return {"status": "running"}
-
 # ── CORS ───────────────────────────────────────────────────────────────────────
 import os
 
@@ -46,11 +34,25 @@ print("🌍 Allowed origins:", _origins)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],   # ✅ NOT "*"
+    allow_origins=_origins,   
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+    print("🔥 ERROR:", str(exc))
+    return JSONResponse(
+        status_code=500,
+        content={"error": str(exc)},
+    )
+
+@app.api_route("/", methods=["GET", "HEAD"])
+def root():
+    return {"status": "running"}
+
+
 
 
 # ── Pydantic Models ────────────────────────────────────────────────────────────
