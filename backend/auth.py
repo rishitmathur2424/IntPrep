@@ -1,4 +1,5 @@
-# auth.py - JWT token creation/validation and password hashing
+# auth.py — JWT + bcrypt auth
+# User IDs are now Firestore string IDs (not integers)
 
 from datetime import datetime, timedelta
 from typing import Optional
@@ -11,38 +12,32 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-SECRET_KEY = os.getenv("SECRET_KEY", "fallback-secret-key")
-ALGORITHM = os.getenv("ALGORITHM", "HS256")
-ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 1440))
+SECRET_KEY  = os.getenv("SECRET_KEY", "change-this-secret")
+ALGORITHM   = os.getenv("ALGORITHM", "HS256")
+TOKEN_EXPIRE = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 1440))
 
-# bcrypt for password hashing
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-security = HTTPBearer()
+security    = HTTPBearer()
 
 
-def hash_password(password):
-    password = password[:72]  # fix bcrypt limit
+def hash_password(password: str) -> str:
     return pwd_context.hash(password)
 
 
-def verify_password(plain, hashed):
-    plain = plain[:72]
+def verify_password(plain: str, hashed: str) -> bool:
     return pwd_context.verify(plain, hashed)
 
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -> str:
-    """Create a signed JWT token with expiry."""
     to_encode = data.copy()
-    expire = datetime.utcnow() + (expires_delta or timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES))
+    expire    = datetime.utcnow() + (expires_delta or timedelta(minutes=TOKEN_EXPIRE))
     to_encode.update({"exp": expire})
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
 
 def decode_token(token: str) -> dict:
-    """Decode and validate a JWT token."""
     try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        return payload
+        return jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
     except JWTError:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -52,9 +47,9 @@ def decode_token(token: str) -> dict:
 
 
 def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security)) -> dict:
-    """FastAPI dependency to extract and validate the current user from JWT."""
     payload = decode_token(credentials.credentials)
-    user_id = payload.get("sub")
-    if not user_id:
+    uid = payload.get("sub")
+    if not uid:
         raise HTTPException(status_code=401, detail="Invalid token payload")
-    return {"user_id": int(user_id), "email": payload.get("email"), "name": payload.get("name")}
+    # user_id is a Firestore string ID now (not int)
+    return {"user_id": uid, "email": payload.get("email"), "name": payload.get("name")}

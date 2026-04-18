@@ -1,49 +1,27 @@
-# database.py - MySQL connection pool
-# Supports both local MySQL and cloud providers (Railway, PlanetScale, Aiven).
-# Set DB_SSL=true in .env when using a cloud database that requires SSL.
+# database.py — Firebase Firestore client
+# Replaces MySQL entirely. No SQL, no schema, no connection strings.
+#
+# Firestore structure:
+#   users/          {uid}  → { name, email, password_hash, created_at }
+#   sessions/       {sid}  → { user_id, mode, target_role, resume_text, status, ... }
+#   sessions/{sid}/questions/{qid} → { question_text, category, order_index, ideal_answer }
+#   sessions/{sid}/answers/{qid}   → { answer_text, scores, feedback, ... }
+#   reports/        {sid}  → { overall_score, strengths, weaknesses, summary }
 
-import mysql.connector
-from mysql.connector import pooling
 import os
+import firebase_admin
+from firebase_admin import credentials, firestore
 from dotenv import load_dotenv
 
 load_dotenv()
 
-db_config = {
-    "host":        os.getenv("DB_HOST", "localhost"),
-    "port":        int(os.getenv("DB_PORT", 3306)),
-    "user":        os.getenv("DB_USER", "root"),
-    "password":    os.getenv("DB_PASSWORD", ""),
-    "database":    os.getenv("DB_NAME", "interview_tool"),
-    "autocommit":  True,
-    "connection_timeout": 30,
-}
+# Initialize Firebase Admin SDK once
+# FIREBASE_SERVICE_ACCOUNT = path to your downloaded service account JSON file
+_sa_path = os.getenv("FIREBASE_SERVICE_ACCOUNT", "firebase-service-account.json")
 
-# Add SSL for cloud databases that require it (Railway, Aiven, etc.)
-if os.getenv("DB_SSL", "false").lower() == "true":
-    db_config["ssl_disabled"] = False
+if not firebase_admin._apps:
+    cred = credentials.Certificate(_sa_path)
+    firebase_admin.initialize_app(cred)
 
-connection_pool = pooling.MySQLConnectionPool(
-    pool_name="intprep_pool",
-    pool_size=5,   # conservative — works on free-tier cloud DB plans
-    **db_config
-)
-
-
-def get_connection():
-    return connection_pool.get_connection()
-
-
-def execute_query(query: str, params: tuple = None, fetch: bool = False):
-    conn   = get_connection()
-    cursor = conn.cursor(dictionary=True)
-    try:
-        cursor.execute(query, params or ())
-        if fetch:
-            return cursor.fetchall()
-        else:
-            conn.commit()
-            return cursor.lastrowid
-    finally:
-        cursor.close()
-        conn.close()
+# Firestore client — import this in main.py
+db = firestore.client()
