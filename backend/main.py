@@ -46,7 +46,7 @@ print("🌍 Allowed origins:", _origins)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=_origins,   # ✅ NOT "*"
+    allow_origins=["*"],   # ✅ NOT "*"
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
