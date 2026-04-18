@@ -33,12 +33,20 @@ def root():
     return {"status": "running"}
 
 # ── CORS ───────────────────────────────────────────────────────────────────────
-_raw_origins = os.getenv("ALLOWED_ORIGINS", "https://localhost:3000,https://intprep1.netlify.app")
-_origins = [o.strip() for o in _raw_origins.split(",")]
+import os
+
+_raw_origins = os.getenv(
+    "ALLOWED_ORIGINS",
+    "http://localhost:3000,https://intprep1.netlify.app"
+)
+
+_origins = [o.strip() for o in _raw_origins.split(",") if o.strip()]
+
+print("🌍 Allowed origins:", _origins)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=_origins,   # ✅ NOT "*"
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
