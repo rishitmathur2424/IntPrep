@@ -21,10 +21,14 @@ app = FastAPI(title="IntPrep API", version="3.0.0")
 
 # ── CORS 
 
-
+_origins = [
+    "http://localhost:3000",
+    "https://intprep1.netlify.app",
+    "https://intprep-backend.onrender.com",
+]
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://intprep1.netlify.app"],
+    allow_origins=["_origins"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
